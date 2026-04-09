@@ -2,7 +2,8 @@
   "name": "cr42-root",
   "private": true,
   "scripts": {
-    "build": "cd server && npm install && npx prisma generate && cd ../client && npm install && npm run build",
-    "vercel-build": "npm run build"
+    "install": "npm install --prefix server && npm install --prefix client",
+    "build": "npm run db:generate --prefix server && npm run build --prefix client",
+    "vercel-build": "npm run install && npm run build"
   }
 }
