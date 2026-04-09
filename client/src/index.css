@@ -1,0 +1,61 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --bg-base: #f0ece4;           /* warm off-white canvas */
+    --gradient-hot: #ff6b35;      /* deep orange */
+    --gradient-warm: #ff9a5c;     /* mid orange */
+    --gradient-soft: #ffcba4;     /* peach */
+    --hero-bg-start: #e8673a;     /* hero radial center */
+    --hero-bg-end: #c8dde8;       /* cool blue-grey edges */
+    --text-dark: #1a1207;         /* near-black warm */
+    --text-muted: #6b5c4e;
+    --card-bg: rgba(255,255,255,0.85);
+    --robo-body: #f5a623;         /* robot primary orange */
+    --robo-dark: #c47d10;         /* robot shadow/dark */
+    --robo-screen: #1a2a1a;       /* robot screen face */
+    --robo-screen-glow: #00ff88;  /* green terminal text glow */
+    --nav-dark: #14110f;
+    --pill-bg: #14110f;
+    --pill-text: #ffffff;
+  }
+
+  *, *::before, *::after {
+    box-sizing: border-box;
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    @apply font-sans antialiased;
+    background-color: var(--bg-base);
+    color: var(--text-dark);
+    min-height: 100vh;
+  }
+
+  ::selection {
+    background-color: var(--gradient-hot);
+    color: white;
+  }
+}
+
+@layer components {
+  /* Button reset / extensions if needed */
+  .btn-pill {
+    @apply inline-flex items-center justify-center gap-2 rounded-full font-bold transition-all duration-300;
+  }
+}
+
+/* Animations */
+@keyframes spin-slow {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.animate-spin-slow {
+  animation: spin-slow 8s linear infinite;
+}
