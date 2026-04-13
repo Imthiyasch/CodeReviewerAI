@@ -25,8 +25,10 @@ export default function AuthCallback() {
         toast.success(`Welcome back, ${res.data.user.name}!`)
         navigate('/app/dashboard')
       })
-      .catch(() => {
-        toast.error('Could not verify your session')
+      .catch((err) => {
+        const msg = err?.response?.data?.error || err?.response?.status || err?.message || 'Network error'
+        toast.error(`Auth failed: ${msg}`)
+        console.error('[AuthCallback error]', err?.response?.data, err?.message)
         navigate('/')
       })
   }, [])
