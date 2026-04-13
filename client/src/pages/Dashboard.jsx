@@ -54,9 +54,10 @@ export default function Dashboard() {
   useEffect(() => {
     const load = async () => {
       try {
+        const timestamp = Date.now()
         const [statsRes, historyRes] = await Promise.all([
-          api.get('/api/user/stats'),
-          api.get('/api/review/history?limit=5'),
+          api.get(`/api/user/stats?t=${timestamp}`),
+          api.get(`/api/review/history?limit=5&t=${timestamp}`),
         ])
         setStats(statsRes.data)
         setRecent(historyRes.data.reviews || [])

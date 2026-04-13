@@ -21,6 +21,7 @@ export default function History() {
       const params = new URLSearchParams({
         page,
         limit: PER_PAGE,
+        t: Date.now(),
         ...(search && { search }),
         ...(langFilter && { language: langFilter }),
       })
