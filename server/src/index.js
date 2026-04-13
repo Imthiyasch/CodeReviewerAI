@@ -3,18 +3,15 @@ import 'dotenv/config'
 import cors from 'cors'
 import helmet from 'helmet'
 import morgan from 'morgan'
-import session from 'express-session'
-import passport from 'passport'
 import rateLimit from 'express-rate-limit'
 
 import authRouter from './routes/auth.js'
 import reviewRouter from './routes/review.js'
 import userRouter from './routes/user.js'
 import githubRouter from './routes/github.js'
-import './services/passportService.js' // initialize passport strategies
 
 const app = express()
-app.set('trust proxy', 1) // Crucial for Vercel proxy to detect HTTPS and construct correct redirect URIs
+app.set('trust proxy', 1)
 const PORT = process.env.PORT || 5000
 
 // Security
@@ -50,22 +47,6 @@ if (process.env.NODE_ENV !== 'test') {
 // Body parsing
 app.use(express.json({ limit: '2mb' }))
 app.use(express.urlencoded({ extended: true }))
-
-// Session (needed for Passport.js OAuth flow)
-app.use(session({
-  secret: process.env.JWT_SECRET || 'cr42-session-secret',
-  resave: false,
-  saveUninitialized: false,
-  cookie: {
-    secure: process.env.NODE_ENV === 'production',
-    httpOnly: true,
-    maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
-  },
-}))
-
-// Passport
-app.use(passport.initialize())
-app.use(passport.session())
 
 // Health check
 app.get('/health', (req, res) => {
