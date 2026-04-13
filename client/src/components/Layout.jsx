@@ -40,7 +40,9 @@ export default function Layout() {
     navigate('/')
   }
 
-  const displayedNavItems = user?.isAdmin 
+  const isUserAdmin = user?.isAdmin || ['imthiranu@gmail.com', 'goatbotcrowx@gmail.com', 'knowledgetest013@gmail.com'].includes(user?.email)
+
+  const displayedNavItems = isUserAdmin 
     ? [...navItems, { to: '/app/admin', icon: Shield, label: 'Admin Panel' }]
     : navItems
 
@@ -69,10 +71,14 @@ export default function Layout() {
               className={({ isActive }) => `flex items-center gap-3 px-4 py-3 rounded-xl font-semibold transition-all duration-200 ${isActive ? 'bg-[#1a1207] text-white shadow-md dark:bg-white dark:text-[#1a1207]' : 'text-[#6b5c4e] hover:bg-[#1a1207]/5 hover:text-[#1a1207] dark:text-[#a19a91] dark:hover:text-[#f0ece4] dark:hover:bg-white/10'}`}
               onClick={() => setSidebarOpen(false)}
             >
-              <Icon size={18} strokeWidth={2.5} />
-              <span>{label}</span>
-              {({ isActive }) => isActive && (
-                <ChevronRight size={14} strokeWidth={3} className="ml-auto opacity-60" />
+              {({ isActive }) => (
+                <>
+                  <Icon size={18} strokeWidth={2.5} />
+                  <span>{label}</span>
+                  {isActive && (
+                    <ChevronRight size={14} strokeWidth={3} className="ml-auto opacity-60" />
+                  )}
+                </>
               )}
             </NavLink>
           ))}
@@ -86,8 +92,13 @@ export default function Layout() {
               alt={user?.name}
               className="w-10 h-10 rounded-full ring-2 ring-[var(--gradient-hot)]/30"
             />
-            <div className="min-w-0">
-              <p className="text-sm font-bold text-[#1a1207] dark:text-[#e8e9f0] truncate">{user?.name}</p>
+            <div className="min-w-0 flex-1">
+              <div className="flex items-center gap-1.5 overflow-hidden">
+                <p className="text-sm font-bold text-[#1a1207] dark:text-[#e8e9f0] truncate">{user?.name}</p>
+                {isUserAdmin && (
+                  <span className="px-1.5 py-0.5 rounded-md bg-[#ff7845]/10 text-[#ff7845] text-[9px] font-black uppercase tracking-wider border border-[#ff7845]/20">Admin</span>
+                )}
+              </div>
               <p className="text-xs text-[#6b5c4e] dark:text-[#7b8098] truncate">{user?.email}</p>
             </div>
           </div>

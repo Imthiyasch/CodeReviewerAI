@@ -9,7 +9,7 @@ export default function Admin() {
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    api.get('/admin/stats')
+    api.get('/api/admin/stats')
       .then((res) => setStats(res.data))
       .catch((err) => {
         toast.error('Failed to load admin stats')
