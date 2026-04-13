@@ -23,16 +23,16 @@
   }
 
   .dark {
-    --bg-base: #111113;           /* deep dark base */
-    --gradient-hot: #ff8554;      /* slightly brighter orange for dark mode contrast */
-    --hero-bg-start: #421808;     /* dark radial */
-    --hero-bg-end: #111113;       /* merges into bg */
-    --text-dark: #f0ece4;         /* text becomes light */
-    --text-muted: #a19a91;        /* muted light text */
-    --card-bg: rgba(25, 25, 28, 0.85); /* dark cards */
-    --nav-dark: #ffffff;          /* inverted UI elements */
-    --pill-bg: #f0ece4;
-    --pill-text: #1a1207;
+    --bg-base: #0d0f14;
+    --gradient-hot: #ff8554;
+    --hero-bg-start: #3a1505;
+    --hero-bg-end: #0d0f14;
+    --text-dark: #e8e9f0;
+    --text-muted: #7b8098;
+    --card-bg: rgba(20, 23, 33, 0.92);
+    --nav-dark: #e8e9f0;
+    --pill-bg: #e8e9f0;
+    --pill-text: #0d0f14;
   }
 
   *, *::before, *::after {
@@ -69,6 +69,14 @@
   to { transform: rotate(360deg); }
 }
 
-.animate-spin-slow {
-  animation: spin-slow 8s linear infinite;
+/* Smooth theme transitions */
+*, *::before, *::after {
+  transition-property: background-color, border-color, color, fill, stroke;
+  transition-timing-function: ease;
+  transition-duration: 150ms;
+}
+
+/* Override keyframe for spin — don't want transitions on those */
+.animate-spin, .animate-spin-slow, .animate-pulse {
+  transition: none;
 }

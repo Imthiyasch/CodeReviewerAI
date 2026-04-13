@@ -48,7 +48,7 @@ export default function Layout() {
     <div className="flex min-h-screen">
       {/* Sidebar */}
       <aside
-        className={`fixed inset-y-0 left-0 z-40 flex flex-col transition-transform duration-300 bg-[rgba(255,255,255,0.85)] backdrop-blur-xl border-r border-[#1a1207]/5 ${sidebarOpen ? 'w-64 translate-x-0' : 'w-64 -translate-x-full lg:translate-x-0'}`}
+        className={`fixed inset-y-0 left-0 z-40 flex flex-col transition-transform duration-300 bg-[rgba(255,255,255,0.92)] dark:bg-[#0f1117]/95 backdrop-blur-xl border-r border-[#1a1207]/8 dark:border-white/[0.06] ${sidebarOpen ? 'w-64 translate-x-0' : 'w-64 -translate-x-full lg:translate-x-0'}`}
       >
         {/* Logo */}
         <div className="flex items-center gap-3 p-6 mb-4">
@@ -79,16 +79,16 @@ export default function Layout() {
         </nav>
 
         {/* User */}
-        <div className="p-4 m-4 bg-white rounded-2xl border border-[#1a1207]/5 shadow-sm">
+        <div className="p-4 m-4 bg-white/80 dark:bg-[#13151c] rounded-2xl border border-[#1a1207]/5 dark:border-white/[0.07] shadow-sm">
           <div className="flex items-center gap-3 mb-3">
             <img
               src={user?.avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(user?.name || 'U')}&background=ff6b35&color=fff`}
               alt={user?.name}
-              className="w-10 h-10 rounded-full ring-2 ring-[var(--gradient-hot)]/20"
+              className="w-10 h-10 rounded-full ring-2 ring-[var(--gradient-hot)]/30"
             />
             <div className="min-w-0">
-              <p className="text-sm font-bold text-[#1a1207] truncate">{user?.name}</p>
-              <p className="text-xs text-[#6b5c4e] truncate">{user?.email}</p>
+              <p className="text-sm font-bold text-[#1a1207] dark:text-[#e8e9f0] truncate">{user?.name}</p>
+              <p className="text-xs text-[#6b5c4e] dark:text-[#7b8098] truncate">{user?.email}</p>
             </div>
           </div>
           <div className="flex gap-2">
@@ -121,11 +121,11 @@ export default function Layout() {
       {/* Main content */}
       <div className="flex-1 flex flex-col lg:ml-64 min-h-screen">
         {/* Topbar */}
-        <header className="sticky top-0 z-20 flex items-center justify-between px-6 py-4 lg:hidden bg-white/80 backdrop-blur-xl border-b border-[#1a1207]/5">
-          <button onClick={() => setSidebarOpen(true)} className="text-[#1a1207] hover:opacity-70 transition-opacity">
+        <header className="sticky top-0 z-20 flex items-center justify-between px-6 py-4 lg:hidden bg-white/80 dark:bg-[#0f1117]/90 backdrop-blur-xl border-b border-[#1a1207]/5 dark:border-white/[0.06]">
+          <button onClick={() => setSidebarOpen(true)} className="text-[#1a1207] dark:text-[#e8e9f0] hover:opacity-70 transition-opacity">
             <Menu size={24} />
           </button>
-          <span className="font-['Playfair_Display'] font-black text-xl tracking-tight text-[#1a1207]">
+          <span className="font-['Playfair_Display'] font-black text-xl tracking-tight text-[#1a1207] dark:text-[#e8e9f0]">
             CR<span className="text-[var(--gradient-hot)]">42</span>
           </span>
           <div className="w-6" />
