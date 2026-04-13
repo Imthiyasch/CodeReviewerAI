@@ -21,9 +21,11 @@ export default function AuthCallback() {
       headers: { Authorization: `Bearer ${token}` },
     })
       .then((res) => {
-        setAuth(res.data.user, token)
-        toast.success(`Welcome back, ${res.data.user.name}!`)
+        const user = res.data?.user || res.data
+        if (!user) throw new Error('No user data in response')
+        setAuth(user, token)
         navigate('/app/dashboard')
+        toast.success(`Welcome back, ${user.name || 'User'}!`)
       })
       .catch((err) => {
         const msg = err?.response?.data?.error || err?.response?.status || err?.message || 'Network error'
