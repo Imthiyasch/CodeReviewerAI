@@ -40,7 +40,7 @@ export default function Layout() {
     navigate('/')
   }
 
-  const displayedNavItems = user?.email === 'imthiranu@gmail.com' 
+  const displayedNavItems = user?.isAdmin 
     ? [...navItems, { to: '/app/admin', icon: Shield, label: 'Admin Panel' }]
     : navItems
 

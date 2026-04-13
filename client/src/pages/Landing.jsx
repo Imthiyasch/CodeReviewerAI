@@ -10,6 +10,11 @@ export default function Landing() {
   const isAuthenticated = useAuthStore((s) => s.isAuthenticated())
   const [isScrolled, setIsScrolled] = useState(false)
 
+  // Always force light mode on the landing page
+  useEffect(() => {
+    document.documentElement.classList.remove('dark')
+  }, [])
+
   // Track scroll for Navbar background
   useEffect(() => {
     const handleScroll = () => setIsScrolled(window.scrollY > 20)

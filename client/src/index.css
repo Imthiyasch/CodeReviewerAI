@@ -23,16 +23,21 @@
   }
 
   .dark {
-    --bg-base: #0d0f14;
-    --gradient-hot: #ff8554;
+    --bg-base: #0c0e15;
+    --gradient-hot: #ff7845;
     --hero-bg-start: #3a1505;
-    --hero-bg-end: #0d0f14;
-    --text-dark: #e8e9f0;
-    --text-muted: #7b8098;
-    --card-bg: rgba(20, 23, 33, 0.92);
-    --nav-dark: #e8e9f0;
-    --pill-bg: #e8e9f0;
-    --pill-text: #0d0f14;
+    --hero-bg-end: #0c0e15;
+    --text-dark: #eef0f8;
+    --text-muted: #6b7280;
+    --card-bg: rgba(17, 21, 32, 0.95);
+    --nav-dark: #eef0f8;
+    --pill-bg: #eef0f8;
+    --pill-text: #0c0e15;
+  }
+
+  .dark body {
+    background: radial-gradient(ellipse 80% 60% at 50% -10%, rgba(255,120,69,0.06) 0%, transparent 60%),
+                linear-gradient(180deg, #0c0e15 0%, #0e1018 100%);
   }
 
   *, *::before, *::after {

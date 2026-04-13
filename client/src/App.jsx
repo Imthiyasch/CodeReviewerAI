@@ -11,7 +11,7 @@ import Layout from './components/Layout'
 
 function AdminRoute({ children }) {
   const user = useAuthStore((s) => s.user)
-  return user?.email === 'imthiranu@gmail.com' ? children : <Navigate to="/app/dashboard" replace />
+  return user?.isAdmin ? children : <Navigate to="/app/dashboard" replace />
 }
 
 function ProtectedRoute({ children }) {
