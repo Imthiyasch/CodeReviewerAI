@@ -3,7 +3,7 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "build": "cd server && npm install && npx prisma generate && cd ../client && npm install && npm run build",
+    "build": "cd server && npm install --include=dev && npx prisma generate && cd ../client && npm install --include=dev && npm run build",
     "vercel-build": "npm run build"
   }
 }
