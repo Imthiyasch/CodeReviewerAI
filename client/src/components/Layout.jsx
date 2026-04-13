@@ -1,9 +1,9 @@
 import { NavLink, Outlet, useNavigate } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import {
-  LayoutDashboard, Code2, History, LogOut, Zap, Menu, ChevronRight,
+  LayoutDashboard, Code2, History, LogOut, Zap, Menu, ChevronRight, Sun, Moon, Shield
 } from 'lucide-react'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import useAuthStore from '../store/authStore'
 import toast from 'react-hot-toast'
 import api from '../lib/api'
@@ -20,12 +20,29 @@ export default function Layout() {
   const clearAuth = useAuthStore((s) => s.clearAuth)
   const navigate = useNavigate()
 
+  const [theme, setTheme] = useState(localStorage.getItem('theme') || 'light')
+
+  useEffect(() => {
+    if (theme === 'dark') {
+      document.documentElement.classList.add('dark')
+    } else {
+      document.documentElement.classList.remove('dark')
+    }
+    localStorage.setItem('theme', theme)
+  }, [theme])
+
+  const toggleTheme = () => setTheme((t) => (t === 'light' ? 'dark' : 'light'))
+
   const handleLogout = async () => {
     try { await api.post('/auth/logout') } catch (_) {}
     clearAuth()
     toast.success('Signed out')
     navigate('/')
   }
+
+  const displayedNavItems = user?.email === 'imthiranu@gmail.com' 
+    ? [...navItems, { to: '/app/admin', icon: Shield, label: 'Admin Panel' }]
+    : navItems
 
   return (
     <div className="flex min-h-screen">
@@ -45,11 +62,11 @@ export default function Layout() {
 
         {/* Nav */}
         <nav className="flex-1 px-4 space-y-2">
-          {navItems.map(({ to, icon: Icon, label }) => (
+          {displayedNavItems.map(({ to, icon: Icon, label }) => (
             <NavLink
               key={to}
               to={to}
-              className={({ isActive }) => `flex items-center gap-3 px-4 py-3 rounded-xl font-semibold transition-all duration-200 ${isActive ? 'bg-[#1a1207] text-white shadow-md' : 'text-[#6b5c4e] hover:bg-[#1a1207]/5 hover:text-[#1a1207]'}`}
+              className={({ isActive }) => `flex items-center gap-3 px-4 py-3 rounded-xl font-semibold transition-all duration-200 ${isActive ? 'bg-[#1a1207] text-white shadow-md dark:bg-white dark:text-[#1a1207]' : 'text-[#6b5c4e] hover:bg-[#1a1207]/5 hover:text-[#1a1207] dark:text-[#a19a91] dark:hover:text-[#f0ece4] dark:hover:bg-white/10'}`}
               onClick={() => setSidebarOpen(false)}
             >
               <Icon size={18} strokeWidth={2.5} />
@@ -74,13 +91,22 @@ export default function Layout() {
               <p className="text-xs text-[#6b5c4e] truncate">{user?.email}</p>
             </div>
           </div>
-          <button
-            onClick={handleLogout}
-            className="flex items-center justify-center gap-2 w-full px-3 py-2 text-sm font-semibold text-red-500 bg-red-50 hover:bg-red-100 transition-colors rounded-xl"
-          >
-            <LogOut size={16} />
-            <span>Sign out</span>
-          </button>
+          <div className="flex gap-2">
+            <button
+              onClick={toggleTheme}
+              className="flex items-center justify-center p-2 text-sm font-semibold text-[#6b5c4e] bg-[#f0ece4] hover:bg-[#e4ddd4] transition-colors rounded-xl dark:bg-[#1a1207] dark:text-[#a19a91] dark:hover:bg-[#2a221f]"
+              title={`Switch to ${theme === 'light' ? 'dark' : 'light'} mode`}
+            >
+              {theme === 'light' ? <Moon size={16} /> : <Sun size={16} />}
+            </button>
+            <button
+              onClick={handleLogout}
+              className="flex-1 flex items-center justify-center gap-2 px-3 py-2 text-sm font-semibold text-red-500 bg-red-50 hover:bg-red-100 transition-colors rounded-xl dark:bg-red-500/10 dark:hover:bg-red-500/20"
+            >
+              <LogOut size={16} />
+              <span>Sign out</span>
+            </button>
+          </div>
         </div>
       </aside>
 

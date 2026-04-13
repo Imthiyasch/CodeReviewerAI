@@ -128,11 +128,8 @@ export default function Landing() {
                initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8, delay: 0.6 }}
                className="flex flex-col sm:flex-row items-center gap-4"
             >
-               <button onClick={handleLogin} className="group inline-flex items-center justify-center gap-2 px-8 py-4 rounded-full font-bold transition-all duration-300 bg-[var(--pill-bg)] text-[var(--pill-text)] shadow-2xl hover:bg-black w-full sm:w-auto text-[15px]">
+               <button onClick={handleLogin} className="group inline-flex items-center justify-center gap-2 px-8 py-4 rounded-full font-bold transition-all duration-300 bg-[var(--pill-bg)] text-[var(--pill-text)] shadow-2xl hover:bg-black dark:hover:bg-white dark:hover:text-[#1a1207] w-full sm:w-auto text-[15px]">
                   Get started <ArrowUpRight size={18} className="transition-transform group-hover:translate-x-1 group-hover:-translate-y-1" />
-               </button>
-               <button className="group inline-flex items-center justify-center gap-2 px-8 py-4 rounded-full font-bold transition-all duration-300 bg-transparent text-[var(--text-dark)] hover:bg-black/5 w-full sm:w-auto text-[15px]">
-                  Watch demo <PlayCircle size={20} className="text-[var(--gradient-hot)] transition-transform group-hover:scale-110" />
                </button>
             </motion.div>
           </div>
@@ -140,17 +137,6 @@ export default function Landing() {
           {/* Right: Robot Container */}
           <div className="w-full lg:w-7/12 relative flex items-center justify-center min-h-[500px]">
              
-             {/* Small Floating Card */}
-             <motion.div 
-               initial={{ opacity: 0, x: 40 }}
-               animate={{ opacity: 1, x: 0, y: [0, -10, 0] }}
-               transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut' }}
-               className="absolute right-[5%] top-[15%] z-20 hidden md:flex flex-col bg-[var(--card-bg)] backdrop-blur-md border border-white/40 p-4 rounded-2xl shadow-[0_20px_40px_rgba(0,0,0,0.08)] max-w-[180px]"
-             >
-               <span className="text-[11px] font-bold uppercase tracking-wider text-[var(--gradient-hot)] mb-1">Live Demo</span>
-               <span className="text-[13px] font-bold text-[var(--text-dark)] leading-tight">Built-in syntax validation</span>
-             </motion.div>
-
              <RoboHero />
 
              {/* Circular Scroll Down Badge */}

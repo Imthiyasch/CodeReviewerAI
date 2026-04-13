@@ -22,6 +22,19 @@
     --pill-text: #ffffff;
   }
 
+  .dark {
+    --bg-base: #111113;           /* deep dark base */
+    --gradient-hot: #ff8554;      /* slightly brighter orange for dark mode contrast */
+    --hero-bg-start: #421808;     /* dark radial */
+    --hero-bg-end: #111113;       /* merges into bg */
+    --text-dark: #f0ece4;         /* text becomes light */
+    --text-muted: #a19a91;        /* muted light text */
+    --card-bg: rgba(25, 25, 28, 0.85); /* dark cards */
+    --nav-dark: #ffffff;          /* inverted UI elements */
+    --pill-bg: #f0ece4;
+    --pill-text: #1a1207;
+  }
+
   *, *::before, *::after {
     box-sizing: border-box;
   }

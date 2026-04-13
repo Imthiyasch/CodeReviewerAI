@@ -9,6 +9,7 @@ import authRouter from './routes/auth.js'
 import reviewRouter from './routes/review.js'
 import userRouter from './routes/user.js'
 import githubRouter from './routes/github.js'
+import adminRouter from './routes/admin.js'
 
 const app = express()
 app.set('trust proxy', 1)
@@ -58,6 +59,7 @@ app.use('/auth', authRouter)
 app.use('/api/review', reviewLimiter, reviewRouter)
 app.use('/api/user', userRouter)
 app.use('/api/github', githubRouter)
+app.use('/api/admin', adminRouter)
 
 // 404
 app.use((req, res) => {

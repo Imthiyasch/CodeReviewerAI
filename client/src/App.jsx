@@ -5,8 +5,14 @@ import Landing from './pages/Landing'
 import Dashboard from './pages/Dashboard'
 import Review from './pages/Review'
 import History from './pages/History'
+import Admin from './pages/Admin'
 import AuthCallback from './pages/AuthCallback'
 import Layout from './components/Layout'
+
+function AdminRoute({ children }) {
+  const user = useAuthStore((s) => s.user)
+  return user?.email === 'imthiranu@gmail.com' ? children : <Navigate to="/app/dashboard" replace />
+}
 
 function ProtectedRoute({ children }) {
   const token = useAuthStore((s) => s.token)
@@ -45,6 +51,7 @@ export default function App() {
           <Route path="review" element={<Review />} />
           <Route path="review/:id" element={<Review />} />
           <Route path="history" element={<History />} />
+          <Route path="admin" element={<AdminRoute><Admin /></AdminRoute>} />
         </Route>
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
