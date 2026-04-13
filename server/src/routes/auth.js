@@ -89,7 +89,7 @@ router.get('/me', authenticate, (req, res) => {
       name: req.user.name,
       email: req.user.email,
       avatar: req.user.avatar,
-      isAdmin: req.user.email === 'imthiranu@gmail.com',
+      isAdmin: ['imthiranu@gmail.com', 'goatbotcrowx@gmail.com', 'knowledgetest013@gmail.com'].includes(req.user.email),
     },
   })
 })
