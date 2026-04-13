@@ -45,4 +45,13 @@ router.post('/logout', (req, res) => {
   res.json({ message: 'Logged out' })
 })
 
+// Diagnostic route
+router.get('/verify-config', (req, res) => {
+  res.json({
+    callback_url: process.env.GOOGLE_CALLBACK_URL,
+    frontend_url: process.env.FRONTEND_URL,
+    node_env: process.env.NODE_ENV
+  })
+})
+
 export default router

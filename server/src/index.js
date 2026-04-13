@@ -14,6 +14,7 @@ import githubRouter from './routes/github.js'
 import './services/passportService.js' // initialize passport strategies
 
 const app = express()
+app.set('trust proxy', 1) // Crucial for Vercel proxy to detect HTTPS and construct correct redirect URIs
 const PORT = process.env.PORT || 5000
 
 // Security
