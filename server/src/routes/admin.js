@@ -4,37 +4,56 @@ import { authenticate } from '../middleware/auth.js'
 
 const router = express.Router()
 
-// Admin constraint middleware
-const isAdmin = (req, res, next) => {
-  if (req.user?.email !== 'imthiranu@gmail.com') {
-    return res.status(403).json({ error: 'Access forbidden: Admin clearance required.' })
+const ADMIN_EMAILS = ['imthiranu@gmail.com', 'goatbotcrowx@gmail.com', 'knowledgetest013@gmail.com']
+
+const requireAdmin = (req, res, next) => {
+  if (!ADMIN_EMAILS.includes(req.user?.email)) {
+    return res.status(403).json({ error: 'Access forbidden: Admin only' })
   }
   next()
 }
 
-router.get('/stats', authenticate, isAdmin, async (req, res) => {
+// GET /api/admin/stats
+router.get('/stats', authenticate, requireAdmin, async (req, res) => {
   try {
-    const totalUsers = await prisma.user.count()
-    const totalReviews = await prisma.review.count()
-    const failedReviews = await prisma.review.count({ where: { status: 'failed' } })
-    
-    const recentReviews = await prisma.review.findMany({
-      take: 20,
-      orderBy: { createdAt: 'desc' },
-      include: {
-        user: { select: { name: true, avatar: true, email: true } }
-      }
-    })
+    const [totalUsers, totalReviews, failedReviews, recentReviews, allUsers] = await Promise.all([
+      prisma.user.count(),
+      prisma.review.count(),
+      prisma.review.count({ where: { status: 'failed' } }),
+      prisma.review.findMany({
+        take: 20,
+        orderBy: { createdAt: 'desc' },
+        include: {
+          user: { select: { name: true, avatar: true, email: true } }
+        }
+      }),
+      prisma.user.findMany({
+        select: { id: true, name: true, email: true, avatar: true, createdAt: true },
+        orderBy: { createdAt: 'desc' }
+      })
+    ])
 
     res.json({
       totalUsers,
       totalReviews,
       failedReviews,
+      completedReviews: totalReviews - failedReviews,
       recentReviews,
+      allUsers,
     })
   } catch (err) {
     console.error('[ADMIN STATS ERROR]', err)
-    res.status(500).json({ error: 'Failed to fetch admin telemetrics' })
+    res.status(500).json({ error: 'Failed to fetch admin stats' })
+  }
+})
+
+// DELETE /api/admin/review/:id
+router.delete('/review/:id', authenticate, requireAdmin, async (req, res) => {
+  try {
+    await prisma.review.delete({ where: { id: req.params.id } })
+    res.json({ message: 'Review deleted' })
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to delete review' })
   }
 })
 

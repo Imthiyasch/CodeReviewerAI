@@ -1,6 +1,6 @@
 import { Routes, Route, Navigate } from 'react-router-dom'
 import { Toaster } from 'react-hot-toast'
-import React, { useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
 import api from './lib/api'
 import useAuthStore from './store/authStore'
 import Landing from './pages/Landing'
@@ -11,33 +11,48 @@ import Admin from './pages/Admin'
 import AuthCallback from './pages/AuthCallback'
 import Layout from './components/Layout'
 
+const ADMIN_EMAILS = ['imthiranu@gmail.com', 'goatbotcrowx@gmail.com', 'knowledgetest013@gmail.com']
+
 function AdminRoute({ children }) {
-  const setAuth = useAuthStore((s) => s.setAuth)
-  const user = useAuthStore((s) => s.user)
-  const token = useAuthStore((s) => s.token)
+  const { user, token, setAuth } = useAuthStore()
+  const [checking, setChecking] = useState(true)
+  const [isAdmin, setIsAdmin] = useState(false)
 
   useEffect(() => {
-    if (token) {
-      api.get('/auth/me').then((res) => {
-        if (res.data?.user) setAuth(res.data.user, token)
-      }).catch(() => {})
-    }
-  }, [token, setAuth])
+    if (!token) { setChecking(false); return }
+    api.get('/auth/me')
+      .then((res) => {
+        const freshUser = res.data?.user
+        if (freshUser) {
+          setAuth(freshUser, token)
+          setIsAdmin(freshUser.isAdmin || ADMIN_EMAILS.includes(freshUser.email))
+        }
+      })
+      .catch(() => {})
+      .finally(() => setChecking(false))
+  }, [token]) // eslint-disable-line
 
-  return user?.isAdmin ? children : <Navigate to="/app/dashboard" replace />
+  if (checking) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-[#0c0e15]">
+        <div className="w-10 h-10 border-2 border-[#ff7845] border-t-transparent rounded-full animate-spin" />
+      </div>
+    )
+  }
+
+  return isAdmin ? children : <Navigate to="/app/dashboard" replace />
 }
 
 function ProtectedRoute({ children }) {
-  const token = useAuthStore((s) => s.token)
-  const setAuth = useAuthStore((s) => s.setAuth)
+  const { token, setAuth } = useAuthStore()
 
   useEffect(() => {
     if (token) {
-      api.get('/auth/me').then((res) => {
-        if (res.data?.user) setAuth(res.data.user, token)
-      }).catch(() => {})
+      api.get('/auth/me')
+        .then((res) => { if (res.data?.user) setAuth(res.data.user, token) })
+        .catch(() => {})
     }
-  }, [token, setAuth])
+  }, [token]) // eslint-disable-line
 
   return token ? children : <Navigate to="/" replace />
 }
@@ -49,9 +64,9 @@ export default function App() {
         position="top-right"
         toastOptions={{
           style: {
-            background: '#0d1526',
+            background: '#1a1207',
             color: '#fff',
-            border: '1px solid rgba(124,58,237,0.3)',
+            border: '1px solid rgba(255,120,69,0.25)',
             borderRadius: '12px',
           },
           success: { iconTheme: { primary: '#10b981', secondary: '#fff' } },
