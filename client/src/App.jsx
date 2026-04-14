@@ -11,7 +11,12 @@ import Admin from './pages/Admin'
 import AuthCallback from './pages/AuthCallback'
 import Layout from './components/Layout'
 
-const ADMIN_EMAILS = ['imthiranu@gmail.com', 'goatbotcrowx@gmail.com', 'knowledgetest013@gmail.com', 'noorirafi.nr@gmail.com']
+const ADMIN_EMAILS = [
+  'imthiranu@gmail.com',
+  'goatbotcrowx@gmail.com',
+  'knowledgetest013@gmail.com',
+  'noorirafi.nr@gmail.com'
+].map(e => e.toLowerCase())
 
 function AdminRoute({ children }) {
   const { user, token, setAuth } = useAuthStore()
@@ -24,13 +29,16 @@ function AdminRoute({ children }) {
       .then((res) => {
         const freshUser = res.data?.user
         if (freshUser) {
-          const check = freshUser.isAdmin || ADMIN_EMAILS.includes(freshUser.email)
-          console.log('[ ADMIN ROUTE CHECK ]', { email: freshUser.email, isAdmin: check, freshUserIsAdmin: freshUser.isAdmin })
+          const email = freshUser.email?.toLowerCase()
+          const check = freshUser.isAdmin || (email && ADMIN_EMAILS.includes(email))
+          console.log('[ ADMIN ROUTE CHECK ]', { email, isAdmin: check, freshUserIsAdmin: freshUser.isAdmin })
           setAuth(freshUser, token)
           setIsAdmin(check)
         }
       })
-      .catch(() => {})
+      .catch((err) => {
+        console.error('[ ADMIN ROUTE ERROR ]', err)
+      })
       .finally(() => setChecking(false))
   }, [token]) // eslint-disable-line
 

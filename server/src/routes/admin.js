@@ -4,11 +4,17 @@ import { authenticate } from '../middleware/auth.js'
 
 const router = express.Router()
 
-const ADMIN_EMAILS = ['imthiranu@gmail.com', 'goatbotcrowx@gmail.com', 'knowledgetest013@gmail.com', 'noorirafi.nr@gmail.com']
+const ADMIN_EMAILS = [
+  'imthiranu@gmail.com',
+  'goatbotcrowx@gmail.com',
+  'knowledgetest013@gmail.com',
+  'noorirafi.nr@gmail.com'
+].map(e => e.toLowerCase())
 
 const requireAdmin = (req, res, next) => {
-  const isAdmin = ADMIN_EMAILS.includes(req.user?.email)
-  console.log(`[ADMIN ACCESS] Attempt by: ${req.user?.email}, Allowed: ${isAdmin}`)
+  const userEmail = req.user?.email?.toLowerCase()
+  const isAdmin = userEmail && ADMIN_EMAILS.includes(userEmail)
+  console.log(`[ADMIN ACCESS] Attempt by: ${userEmail}, Allowed: ${isAdmin}`)
   if (!isAdmin) {
     return res.status(403).json({ error: 'Access forbidden: Admin only' })
   }
