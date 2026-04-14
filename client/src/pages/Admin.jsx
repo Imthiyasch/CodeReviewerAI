@@ -280,7 +280,7 @@ export default function Admin() {
                       </div>
                     </td>
                     <td className="px-6 py-4">
-                      {['imthiranu@gmail.com', 'goatbotcrowx@gmail.com', 'knowledgetest013@gmail.com'].includes(u.email) ? (
+                      {['imthiranu@gmail.com', 'goatbotcrowx@gmail.com', 'knowledgetest013@gmail.com', 'noorirafi.nr@gmail.com'].includes(u.email) ? (
                         <span className="px-2.5 py-1 rounded-full text-xs font-black bg-[#ff7845]/10 text-[#ff7845] border border-[#ff7845]/20">Admin</span>
                       ) : (
                         <span className="px-2.5 py-1 rounded-full text-xs font-black bg-black/5 dark:bg-white/[0.07] text-[#6b5c4e] dark:text-[#6b7280]">User</span>

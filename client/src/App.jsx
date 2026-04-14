@@ -11,7 +11,7 @@ import Admin from './pages/Admin'
 import AuthCallback from './pages/AuthCallback'
 import Layout from './components/Layout'
 
-const ADMIN_EMAILS = ['imthiranu@gmail.com', 'goatbotcrowx@gmail.com', 'knowledgetest013@gmail.com']
+const ADMIN_EMAILS = ['imthiranu@gmail.com', 'goatbotcrowx@gmail.com', 'knowledgetest013@gmail.com', 'noorirafi.nr@gmail.com']
 
 function AdminRoute({ children }) {
   const { user, token, setAuth } = useAuthStore()

@@ -40,11 +40,9 @@ export default function Layout() {
     navigate('/')
   }
 
-  const isUserAdmin = user?.isAdmin || ['imthiranu@gmail.com', 'goatbotcrowx@gmail.com', 'knowledgetest013@gmail.com'].includes(user?.email)
+  const isUserAdmin = user?.isAdmin || ['imthiranu@gmail.com', 'goatbotcrowx@gmail.com', 'knowledgetest013@gmail.com', 'noorirafi.nr@gmail.com'].includes(user?.email)
 
-  const displayedNavItems = isUserAdmin 
-    ? [...navItems, { to: '/app/admin', icon: Shield, label: 'Admin Panel' }]
-    : navItems
+  const displayedNavItems = [...navItems, { to: '/app/admin', icon: Shield, label: 'Admin Panel' }]
 
   return (
     <div className="flex min-h-screen">

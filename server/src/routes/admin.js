@@ -4,7 +4,7 @@ import { authenticate } from '../middleware/auth.js'
 
 const router = express.Router()
 
-const ADMIN_EMAILS = ['imthiranu@gmail.com', 'goatbotcrowx@gmail.com', 'knowledgetest013@gmail.com']
+const ADMIN_EMAILS = ['imthiranu@gmail.com', 'goatbotcrowx@gmail.com', 'knowledgetest013@gmail.com', 'noorirafi.nr@gmail.com']
 
 const requireAdmin = (req, res, next) => {
   if (!ADMIN_EMAILS.includes(req.user?.email)) {
