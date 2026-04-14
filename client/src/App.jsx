@@ -24,8 +24,10 @@ function AdminRoute({ children }) {
       .then((res) => {
         const freshUser = res.data?.user
         if (freshUser) {
+          const check = freshUser.isAdmin || ADMIN_EMAILS.includes(freshUser.email)
+          console.log('[ ADMIN ROUTE CHECK ]', { email: freshUser.email, isAdmin: check, freshUserIsAdmin: freshUser.isAdmin })
           setAuth(freshUser, token)
-          setIsAdmin(freshUser.isAdmin || ADMIN_EMAILS.includes(freshUser.email))
+          setIsAdmin(check)
         }
       })
       .catch(() => {})

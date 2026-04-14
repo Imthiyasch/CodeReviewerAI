@@ -83,13 +83,17 @@ router.get('/google/callback', async (req, res) => {
 
 // Get current user (JWT protected)
 router.get('/me', authenticate, (req, res) => {
+  const adminEmails = ['imthiranu@gmail.com', 'goatbotcrowx@gmail.com', 'knowledgetest013@gmail.com', 'noorirafi.nr@gmail.com']
+  const isAdmin = adminEmails.includes(req.user.email)
+  console.log(`[AUTH ME] Email: ${req.user.email}, IsAdmin: ${isAdmin}`)
+  
   res.json({
     user: {
       id: req.user.id,
       name: req.user.name,
       email: req.user.email,
       avatar: req.user.avatar,
-      isAdmin: ['imthiranu@gmail.com', 'goatbotcrowx@gmail.com', 'knowledgetest013@gmail.com'].includes(req.user.email),
+      isAdmin,
     },
   })
 })

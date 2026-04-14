@@ -7,7 +7,9 @@ const router = express.Router()
 const ADMIN_EMAILS = ['imthiranu@gmail.com', 'goatbotcrowx@gmail.com', 'knowledgetest013@gmail.com', 'noorirafi.nr@gmail.com']
 
 const requireAdmin = (req, res, next) => {
-  if (!ADMIN_EMAILS.includes(req.user?.email)) {
+  const isAdmin = ADMIN_EMAILS.includes(req.user?.email)
+  console.log(`[ADMIN ACCESS] Attempt by: ${req.user?.email}, Allowed: ${isAdmin}`)
+  if (!isAdmin) {
     return res.status(403).json({ error: 'Access forbidden: Admin only' })
   }
   next()
