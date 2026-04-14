@@ -1,5 +1,9 @@
 import axios from 'axios'
 
+const API_HEADERS = process.env.GITHUB_TOKEN 
+  ? { Authorization: `token ${process.env.GITHUB_TOKEN}` }
+  : {}
+
 const VALID_EXTENSIONS = new Set([
   'js', 'jsx', 'mjs', 'cjs', 'ts', 'tsx', 'py', 'java', 'go', 'rs', 'cpp', 'cc', 'cxx', 'c', 'cs', 'php', 'rb', 'swift', 'kt', 'sql', 'html', 'css', 'scss', 'sh', 'bash', 'json', 'yml', 'yaml', 'md'
 ])
@@ -22,29 +26,41 @@ function detectLanguage(filename) {
 }
 
 export function parseGithubUrl(url) {
-  url = url.trim()
-  if (url.includes('raw.githubusercontent.com')) {
-    return { type: 'raw', rawUrl: url }
-  }
-
-  const regex = /^https?:\/\/github\.com\/([^/]+)\/([^/]+)(?:\/(?:tree|blob)\/([^/]+)\/(.+))?$/
-  const match = url.match(regex)
-  
-  if (!match) {
-    throw new Error('Invalid GitHub URL. Please provide a valid repository or file URL.')
-  }
-
-  const [, owner, repo, branch, path] = match
-
-  if (branch && path) {
-    return {
-      type: 'file',
-      owner, repo, branch, path,
-      rawUrl: `https://raw.githubusercontent.com/${owner}/${repo}/${branch}/${path}`
+  try {
+    const u = new URL(url.trim());
+    if (u.hostname === 'raw.githubusercontent.com') {
+      return { type: 'raw', rawUrl: url.trim() };
     }
-  }
+    
+    if (u.hostname !== 'github.com') {
+      throw new Error('Not a GitHub URL');
+    }
 
-  return { type: 'repo', owner, repo }
+    // Path format: /owner/repo/blob/branch/path... OR /owner/repo
+    const parts = u.pathname.split('/').filter(Boolean);
+    if (parts.length < 2) {
+      throw new Error('Invalid GitHub URL');
+    }
+
+    const [owner, repo, type, branch, ...pathParts] = parts;
+    const path = pathParts.join('/');
+
+    if (type === 'blob' || type === 'tree') {
+      if (!branch || !path) {
+        // Just the repo
+        return { type: 'repo', owner, repo };
+      }
+      return {
+        type: 'file',
+        owner, repo, branch, path,
+        rawUrl: `https://raw.githubusercontent.com/${owner}/${repo}/${branch}/${path}`
+      };
+    }
+
+    return { type: 'repo', owner, repo };
+  } catch (err) {
+    throw new Error('Invalid GitHub URL. Please provide a valid repository or file URL.');
+  }
 }
 
 export async function fetchGithubTree(githubUrl) {
@@ -57,18 +73,26 @@ export async function fetchGithubTree(githubUrl) {
   const { owner, repo } = parsed
   let defaultBranch = 'main'
   try {
-    const { data: repoInfo } = await axios.get(`https://api.github.com/repos/${owner}/${repo}`, { timeout: 10000 })
+    const { data: repoInfo } = await axios.get(`https://api.github.com/repos/${owner}/${repo}`, { 
+      timeout: 10000,
+      headers: API_HEADERS
+    })
     defaultBranch = repoInfo.default_branch || 'main'
   } catch (e) {
     if (e.response?.status === 404) throw new Error('Repository not found or is private.')
+    if (e.response?.status === 403) throw new Error('GitHub API rate limit exceeded. Please wait or add a GITHUB_TOKEN.')
     console.warn('Could not fetch repo info, defaulting to main branch.')
   }
 
   let tree = []
   try {
-    const { data: treeInfo } = await axios.get(`https://api.github.com/repos/${owner}/${repo}/git/trees/${defaultBranch}?recursive=1`, { timeout: 15000 })
+    const { data: treeInfo } = await axios.get(`https://api.github.com/repos/${owner}/${repo}/git/trees/${defaultBranch}?recursive=1`, { 
+      timeout: 15000,
+      headers: API_HEADERS
+    })
     tree = treeInfo.tree
   } catch (e) {
+    if (e.response?.status === 403) throw new Error('GitHub API rate limit exceeded. Please wait or add a GITHUB_TOKEN.')
     throw new Error(`Could not fetch files for branch ${defaultBranch}. Is the repository private?`)
   }
 
@@ -95,7 +119,10 @@ export async function fetchGithubFile(githubUrl) {
   const { data: code } = await axios.get(parsed.rawUrl, {
     timeout: 15000,
     responseType: 'text',
-    headers: { Accept: 'text/plain' },
+    headers: { 
+      ...API_HEADERS,
+      Accept: 'text/plain' 
+    },
   })
 
   if (!code || typeof code !== 'string' || code.trim().length === 0) throw new Error('File is empty')
