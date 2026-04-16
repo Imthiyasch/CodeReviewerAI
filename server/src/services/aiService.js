@@ -5,7 +5,7 @@ const MODEL = process.env.OPENROUTER_MODEL || 'google/gemini-2.0-flash-001'
 
 const SYSTEM_PROMPT = `You are CR42, an expert senior software engineer and code reviewer. 
 Analyse the provided code and return a comprehensive review in strictly valid JSON format.
-Do NOT add markdown code fences — output raw JSON only.
+Output ONLY raw JSON. Do NOT include markdown code blocks (e.g., no \`\`\`json).
 
 Your JSON schema must be EXACTLY:
 {
@@ -34,50 +34,72 @@ Your JSON schema must be EXACTLY:
   ],
   "suggestions": ["string", "string"],
   "documentation": "string — JSDoc or docstring for the main function/class, in markdown",
-  "refactoredCode": "string — the full corrected and improved version of the code. CRITICAL LIMITATION: If the provided code is large (over 300 lines or highly complex), DO NOT attempt to rewrite the entire file. Simply return: '// Refactored code omitted due to large file size to prevent output limits. Refer to specific bug fixes above.'"
+  "refactoredCode": "string — the full corrected and improved version of the code."
 }
 
-Be thorough but concise. Real bugs only — no false positives.`
+CRITICAL RULES:
+1. If the provided code is complex or large, focus on 'bugs' and 'summary' first. 
+2. In 'refactoredCode', if the file is too long to rewrite safely (over 200 lines), provide only the most important sections or a comment: '// Refactored code omitted to ensure response fits in JSON.'
+3. Ensure every string is properly escaped for JSON.
+4. Output raw JSON only.`
+
+function extractJson(content) {
+  try {
+    return JSON.parse(content)
+  } catch (err) {
+    // Attempt to extract the first { ... } block
+    const firstBrace = content.indexOf('{')
+    const lastBrace = content.lastIndexOf('}')
+    if (firstBrace !== -1 && lastBrace !== -1) {
+      const candidate = content.slice(firstBrace, lastBrace + 1)
+      try {
+        return JSON.parse(candidate)
+      } catch (e) {
+        throw new Error('The AI generated malformed JSON due to output length limits.')
+      }
+    }
+    throw new Error('No valid JSON found in AI response.')
+  }
+}
 
 export async function reviewCode({ code, language }) {
   const userMessage = `Language: ${language}\n\nCode to review:\n\`\`\`${language}\n${code}\n\`\`\``
 
-  const response = await axios.post(
-    `${OPENROUTER_BASE}/chat/completions`,
-    {
-      model: MODEL,
-      messages: [
-        { role: 'system', content: SYSTEM_PROMPT },
-        { role: 'user', content: userMessage },
-      ],
-      response_format: { type: 'json_object' },
-      temperature: 0.3,
-      max_tokens: 8192,
-    },
-    {
-      headers: {
-        Authorization: `Bearer ${process.env.OPENROUTER_API_KEY}`,
-        'HTTP-Referer': process.env.FRONTEND_URL || 'http://localhost:5173',
-        'X-Title': 'CR42 AI Code Review',
-        'Content-Type': 'application/json',
-      },
-      timeout: 120000,
-    }
-  )
-
-  const content = response.data?.choices?.[0]?.message?.content
-  if (!content) throw new Error('No response from AI model')
-
   try {
-    return JSON.parse(content)
+    const response = await axios.post(
+      `${OPENROUTER_BASE}/chat/completions`,
+      {
+        model: MODEL,
+        messages: [
+          { role: 'system', content: SYSTEM_PROMPT },
+          { role: 'user', content: userMessage },
+        ],
+        response_format: { type: 'json_object' },
+        temperature: 0.1, // Lower temperature for more consistent JSON
+        max_tokens: 6000,   // Safety buffer to prevent cut-off halfway through a string
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${process.env.OPENROUTER_API_KEY}`,
+          'HTTP-Referer': process.env.FRONTEND_URL || 'http://localhost:5173',
+          'X-Title': 'CR42 AI Code Review',
+          'Content-Type': 'application/json',
+        },
+        timeout: 90000,
+      }
+    )
+
+    const content = response.data?.choices?.[0]?.message?.content
+    if (!content) throw new Error('AI model returned an empty response.')
+
+    return extractJson(content)
   } catch (err) {
-    // Try to extract JSON from the response
-    try {
-      const match = content.match(/\{[\s\S]*\}/)
-      if (match) return JSON.parse(match[0])
-    } catch {
-      console.error("JSON PARSE ERROR (Partial response):", content)
-    }
-    throw new Error(err.message + '\\n(Issue: The AI hit output size limits while compiling the review JSON)')
+    if (err.response?.status === 402) throw new Error('OpenRouter: Out of credits')
+    if (err.response?.status === 429) throw new Error('OpenRouter: Rate limit reached')
+    if (err.code === 'ECONNABORTED') throw new Error('AI review timed out. Try a smaller code snippet.')
+    
+    console.error('[AI SERVICE ERROR]', err.message)
+    throw err
   }
 }
+

@@ -51,8 +51,12 @@ router.post('/', authenticate, async (req, res) => {
       ...result,
     })
   } catch (err) {
+    const isAdmin = ['imthiranu@gmail.com', 'goatbotcrowx@gmail.com', 'knowledgetest013@gmail.com', 'noorirafi.nr@gmail.com'].includes(req.user?.email)
     console.error('[REVIEW ERROR]', err.message)
-    res.status(500).json({ error: err.message || 'Review failed' })
+    
+    // Provide more specific error for admins
+    const errorMsg = isAdmin ? `[Admin Debug] ${err.message}` : (err.message || 'Review failed')
+    res.status(500).json({ error: errorMsg })
   }
 })
 
