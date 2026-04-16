@@ -13,6 +13,13 @@ import adminRouter from './routes/admin.js'
 
 const app = express()
 app.set('trust proxy', 1)
+
+// Global request log (Debug only)
+app.use((req, res, next) => {
+  console.log(`[INCOMING] ${req.method} ${req.url} - ${new Date().toISOString()}`)
+  next()
+})
+
 const PORT = process.env.PORT || 5000
 
 // Security
