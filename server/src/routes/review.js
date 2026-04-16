@@ -51,7 +51,9 @@ router.post('/', authenticate, async (req, res) => {
       ...result,
     })
   } catch (err) {
-    const isAdmin = ['imthiranu@gmail.com', 'goatbotcrowx@gmail.com', 'knowledgetest013@gmail.com', 'noorirafi.nr@gmail.com'].includes(req.user?.email)
+    const adminEmails = ['imthiranu@gmail.com', 'goatbotcrowx@gmail.com', 'knowledgetest013@gmail.com', 'noorirafi.nr@gmail.com'].map(e => e.toLowerCase())
+    const userEmail = req.user?.email?.toLowerCase()
+    const isAdmin = userEmail && adminEmails.includes(userEmail)
     console.error('[REVIEW ERROR]', err.message)
     
     // Provide more specific error for admins
